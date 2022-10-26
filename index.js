@@ -9,14 +9,18 @@ import handleValidationErrors from "./utils/handleValidationErrors.js";
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 
 const app = express();
 app.use(express.json());
-app.use('/uploads', express.static(path.resolve('./backend/uploads')));
+app.use('/uploads', express.static(path.resolve('./uploads')));
 app.use(cors());
 const storage = multer.diskStorage({
     destination: (_, __, cb) => {
-      cb(null, path.resolve('./backend/uploads'));
+        if (!fs.existsSync(path.resolve('./uploads'))) {
+            fs.mkdirSync(path.resolve('./uploads'));
+        }
+      cb(null, path.resolve('./uploads'));
     },
     filename: (_, file, cb) => {
       cb(null, file.originalname);
